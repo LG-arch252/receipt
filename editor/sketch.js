@@ -9,71 +9,61 @@ export const receipt = {
 
 // everything here is editable. play around or rm -rf and see what you come up with!
 export function drawReceipt(p) {
+  
   const { width: w, height: h } = p;
   const margin = 24;
 
-  // Header
-  p.noStroke();
-  p.fill(0);
-    p.textFont("monospace");
-    p.textAlign(p.CENTER, p.TOP);
-    p.textStyle(p.BOLD);
-    p.textSize(28);
-    p.text("NIGHT SIGNALS", w / 2, 30);
+const cx = w / 2;
+const cy = 500;
 
-  dashedLine(p, margin, 94, w - margin, 94, 6, 5);
+// Stem
+p.stroke(0);
+p.strokeWeight(6);
+p.line(cx, cy + 80, cx, cy + 280);
 
-  // A seeded field of tiny stars and radio noise.
-  for (let i = 0; i < 150; i += 1) {
-    const x = p.random(margin, w - margin);
-    const y = p.random(118, 350);
-    const size = p.random([1, 1, 1, 2, 2, 3]);
-    if (p.random() > 0.82) {
-      p.rect(x - 3, y, 7, 1);
-      p.rect(x, y - 3, 1, 7);
-    } else {
-      p.rect(x, y, size, size);
-    }
-  }
+// Petals
+p.noFill();
+p.stroke(0);
+p.strokeWeight(2);
 
-  // Layered mountain signals. p.noise() and p.random() are both seeded.
-  const ridgeTop = 300;
-  for (let layer = 0; layer < 5; layer += 1) {
-    p.fill(layer % 2 === 0 ? 0 : 255);
-    p.stroke(0);
-    p.strokeWeight(2);
-    p.beginShape();
-    p.vertex(margin, 500 + layer * 48);
-    for (let x = margin; x <= w - margin; x += 5) {
-      const wave = p.noise(x * 0.012, layer * 4.2) * 90;
-      const y = ridgeTop + layer * 50 - wave;
-      p.vertex(x, y);
-    }
-    p.vertex(w - margin, 500 + layer * 48);
-    p.endShape(p.CLOSE);
-  }
+for (let i = 0; i < 32; i++) {
+  let a = (Math.PI *2) * i / 32;
 
-  // The transmission: a winding route with little station markers.
-  p.noFill();
-  p.stroke(0);
-  p.strokeWeight(5);
-  p.beginShape();
-  const route = [];
-  for (let y = 585; y < 915; y += 34) {
-    const x = p.map(p.noise(y * 0.018, 20), 0, 1, 68, w - 68);
-    route.push({ x, y });
-    p.vertex(x, y);
-  }
-  p.endShape();
+  p.push();
+  p.translate(cx, cy);
+  p.rotate(a);
 
-  p.strokeWeight(2);
-  p.fill(255);
-  route.forEach(({ x, y }, index) => {
-    if (index % 2 === 0) {
-      p.square(x - 6, y - 6, 12);
-      p.line(index % 4 === 0 ? margin : w - margin, y, x, y);
-    }
-  });
+  // Petal extends outward
+  p.ellipse(0, -90, 35, 110);
+
+  p.pop();
+}
+
+// Center
+p.fill(255);
+p.stroke(0);
+p.strokeWeight(3);
+p.circle(cx, cy, 120);
+
+// Seeds
+p.fill(0);
+p.noStroke();
+
+for (let i = 0; i < 250; i++) {
+  let r = Math.sqrt(p.random()) * 45;
+  let a = p.random(Math.PI*2);
+
+  let x = cx + Math.cos(a) * r;
+  let y = cy + Math.sin(a) * r;
+
+  p.circle(x, y, 2);
+}
+p.textAlign(p.CENTER);
+p.textSize(50);
+p.text("SUNFLOWER", w/2, 75);
+
+p.textSize(25);
+p.text("GENERATED RECEIPT ART", w/2, 105);
 
   dashedLine(p, margin, 930, w - margin, 930, 6, 5);
 
